@@ -96,12 +96,21 @@ int main(int argc, char **argv) {
 
     //initializing arrays of Cars
     Car ***arrays = malloc(arrays_len * sizeof(Car **));
-    
+    if (!arrays) {
+        return 1;
+    }
+
     for (int i = 0; i < arrays_len; ++i) {
         arrays[i] = malloc(elements_len * sizeof(Car *));
+        if (!(arrays[i])) {
+            return 1;
+        }
 
         for (int j = 0; j < elements_len; ++j) {
             arrays[i][j] = Car_random();
+            if (!(arrays[i][j])) {
+                return 1;
+            }
         }
     }
     
@@ -114,6 +123,9 @@ int main(int argc, char **argv) {
     //timing of the sort
     struct timespec start, end;
     double *times = malloc(arrays_len * sizeof(double));
+    if (!times) {
+        return 1;
+    }
 
     for (int i = 0; i < arrays_len; ++i) {
         clock_gettime(CLOCK_MONOTONIC, &start);
@@ -173,6 +185,9 @@ int main(int argc, char **argv) {
 
 Car *Car_random() {
     Car *car = malloc(sizeof(Car));
+    if (!car) {
+        return NULL;
+    }
     char letter = (char)rand_int(0, 53);
 
     for (int i = 0; i < 16; ++i) {
@@ -184,6 +199,10 @@ Car *Car_random() {
     int len = rand_int(30, 100);
 
     car->owner = calloc(len + 1, sizeof(char));
+    if (!car->owner) {
+        return NULL;
+    }
+
     for (int i = 0; i < len; ++i) {
         letter = (char)rand_int(32, 126);
 
