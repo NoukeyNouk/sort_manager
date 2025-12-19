@@ -97,13 +97,13 @@ int main(int argc, char **argv) {
     printf("Important: %d\n\n", important_flag);
 
     //initializing arrays of Cars
-    Car ***arrays = malloc(arrays_len * sizeof(Car **));
+    Car ***arrays = calloc(arrays_len, sizeof(Car **));
     if (!arrays) {
         return 1;
     }
 
     for (int i = 0; i < arrays_len; ++i) {
-        arrays[i] = malloc(elements_len * sizeof(Car *));
+        arrays[i] = calloc(elements_len, sizeof(Car *));
         if (!(arrays[i])) {
             goto cleanup;
         }
