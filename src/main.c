@@ -30,6 +30,8 @@ int main(int argc, char **argv) {
     int arrays_len = 10;
     int sort_number = 0;
 
+    double *times = NULL;
+
     // parsing flags
     while ((opt = getopt(argc, argv, "mpris:f:e:a:")) != -1) {
         switch (opt) {
@@ -103,13 +105,13 @@ int main(int argc, char **argv) {
     for (int i = 0; i < arrays_len; ++i) {
         arrays[i] = malloc(elements_len * sizeof(Car *));
         if (!(arrays[i])) {
-            return 1;
+            goto cleanup;
         }
 
         for (int j = 0; j < elements_len; ++j) {
             arrays[i][j] = Car_random();
             if (!(arrays[i][j])) {
-                return 1;
+                goto cleanup;
             }
         }
     }
@@ -122,9 +124,9 @@ int main(int argc, char **argv) {
 
     //timing of the sort
     struct timespec start, end;
-    double *times = malloc(arrays_len * sizeof(double));
+    times = malloc(arrays_len * sizeof(double));
     if (!times) {
-        return 1;
+        goto cleanup;
     }
 
     for (int i = 0; i < arrays_len; ++i) {
@@ -172,15 +174,27 @@ int main(int argc, char **argv) {
     printf("Elements: %d\n", elements_len);
 
     //free all
-    free(times);
-    for (int i = 0; i < arrays_len; ++i) {
-        for (int j = 0; j < elements_len; ++j) {
-            free(arrays[i][j]->owner);
-            free(arrays[i][j]);
-        }
-        free(arrays[i]);
+cleanup:
+    if (times) {
+        free(times);
     }
-    free(arrays);
+    if (arrays) {
+        for (int i = 0; i < arrays_len; ++i) {
+            if (arrays[i]) {
+                for (int j = 0; j < elements_len; ++j) {
+                    if (arrays[i][j]) {
+                        if (arrays[i][j]->owner) {
+                            free(arrays[i][j]->owner);
+                        }
+                    }                
+                    free(arrays[i][j]);
+                }
+                free(arrays[i]);
+            }
+        }
+        free(arrays);
+    }
+    return 0;
 }
 
 Car *Car_random() {
@@ -200,6 +214,7 @@ Car *Car_random() {
 
     car->owner = calloc(len + 1, sizeof(char));
     if (!car->owner) {
+        free(car);
         return NULL;
     }
 
