@@ -2,8 +2,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
+dct = {'tables/dots1.csv': 'comb sort',
+       'tables/dots2.csv': 'selection sort',
+       'tables/dots3.csv': 'quick sort'}
 # --- НАСТРОЙКИ ---
-FILES = ['dots1.csv', 'dots2.csv', 'dots3.csv'] # Список файлов
+FILES = ['tables/dots1.csv', 'tables/dots2.csv', 'tables/dots3.csv'] # Список файлов
 COLORS = ['blue', 'green', 'red']                # Цвета для линий
 Y_MIN = 0                                        # Минимум по Y (None для авто)
 Y_MAX = 0.0006                                  # Максимум по Y (None для авто)
@@ -25,7 +28,7 @@ def process_graphs():
         plt.figure(figsize=(8, 5))
         plt.plot(df['X'], df['Y'], marker='o', linestyle='-', color=COLORS[i % len(COLORS)])
         
-        plt.title(f'График: {filename}')
+        plt.title(f'График: {dct[filename]}')
         plt.xlabel('Аргумент (X)')
         plt.ylabel('Функция (Y)')
         plt.grid(True)
@@ -35,7 +38,7 @@ def process_graphs():
             plt.ylim(Y_MIN, Y_MAX)
             
         # Сохранение
-        output_name = filename.replace('.csv', '.png')
+        output_name = filename.replace('.csv', '.png').replace('tables', 'graphs')
         plt.savefig(output_name)
         plt.close() # Закрываем, чтобы очистить память
         print(f"Сохранен график: {output_name}")
@@ -51,7 +54,7 @@ def process_graphs():
         df = pd.read_csv(filename, sep=DELIMITER, decimal=DECIMAL, header=None, names=['X', 'Y'])
         # label=filename добавляет имя файла в легенду
         plt.plot(df['X'], df['Y'], marker='o', linestyle='-', 
-                 color=COLORS[i % len(COLORS)], label=filename)
+                 color=COLORS[i % len(COLORS)], label=dct[filename])
 
     if found_any:
         plt.title('Сводный график всех файлов')
@@ -63,7 +66,7 @@ def process_graphs():
         if Y_MIN is not None and Y_MAX is not None:
             plt.ylim(Y_MIN, Y_MAX)
             
-        plt.savefig('combined_plot.png')
+        plt.savefig('graphs/combined_plot.png')
         print("Сохранен общий график: combined_plot.png")
     else:
         print("Нет данных для общего графика.")

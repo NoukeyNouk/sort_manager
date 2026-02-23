@@ -30,6 +30,8 @@ int main(int argc, char **argv) {
     int arrays_len = 10;
     int sort_number = 0;
 
+    double *times = NULL;
+
     // parsing flags
     while ((opt = getopt(argc, argv, "mpris:f:e:a:")) != -1) {
         switch (opt) {
@@ -95,13 +97,22 @@ int main(int argc, char **argv) {
     printf("Important: %d\n\n", important_flag);
 
     //initializing arrays of Cars
-    Car ***arrays = malloc(arrays_len * sizeof(Car **));
-    
+    Car ***arrays = calloc(arrays_len, sizeof(Car **));
+    if (!arrays) {
+        return 1;
+    }
+
     for (int i = 0; i < arrays_len; ++i) {
-        arrays[i] = malloc(elements_len * sizeof(Car *));
+        arrays[i] = calloc(elements_len, sizeof(Car *));
+        if (!(arrays[i])) {
+            goto cleanup;
+        }
 
         for (int j = 0; j < elements_len; ++j) {
             arrays[i][j] = Car_random();
+            if (!(arrays[i][j])) {
+                goto cleanup;
+            }
         }
     }
     
@@ -113,7 +124,10 @@ int main(int argc, char **argv) {
 
     //timing of the sort
     struct timespec start, end;
-    double *times = malloc(arrays_len * sizeof(double));
+    times = malloc(arrays_len * sizeof(double));
+    if (!times) {
+        goto cleanup;
+    }
 
     for (int i = 0; i < arrays_len; ++i) {
         clock_gettime(CLOCK_MONOTONIC, &start);
@@ -160,19 +174,34 @@ int main(int argc, char **argv) {
     printf("Elements: %d\n", elements_len);
 
     //free all
-    free(times);
-    for (int i = 0; i < arrays_len; ++i) {
-        for (int j = 0; j < elements_len; ++j) {
-            free(arrays[i][j]->owner);
-            free(arrays[i][j]);
-        }
-        free(arrays[i]);
+cleanup:
+    if (times) {
+        free(times);
     }
-    free(arrays);
+    if (arrays) {
+        for (int i = 0; i < arrays_len; ++i) {
+            if (arrays[i]) {
+                for (int j = 0; j < elements_len; ++j) {
+                    if (arrays[i][j]) {
+                        if (arrays[i][j]->owner) {
+                            free(arrays[i][j]->owner);
+                        }
+                    }                
+                    free(arrays[i][j]);
+                }
+                free(arrays[i]);
+            }
+        }
+        free(arrays);
+    }
+    return 0;
 }
 
 Car *Car_random() {
     Car *car = malloc(sizeof(Car));
+    if (!car) {
+        return NULL;
+    }
     char letter = (char)rand_int(0, 53);
 
     for (int i = 0; i < 16; ++i) {
@@ -184,6 +213,11 @@ Car *Car_random() {
     int len = rand_int(30, 100);
 
     car->owner = calloc(len + 1, sizeof(char));
+    if (!car->owner) {
+        free(car);
+        return NULL;
+    }
+
     for (int i = 0; i < len; ++i) {
         letter = (char)rand_int(32, 126);
 

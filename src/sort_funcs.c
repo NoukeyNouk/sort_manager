@@ -21,8 +21,9 @@ void swap(void *a, void *b, size_t size) {
 void comb_sort(void *array, size_t len, size_t size, compare_func_t cmp) {
     size_t step = len;
     char *ptr = (char *)array;
-
-    while (step > 1) {
+    int swapped = 0;
+    while (step > 1 || swapped) {
+        swapped = 0;
         step /= SHRINK_STEP;
         if (step < 1) {
             step = 1;
@@ -32,6 +33,7 @@ void comb_sort(void *array, size_t len, size_t size, compare_func_t cmp) {
             void *p2 = ptr + size * (i + step);
             if (cmp(p1, p2) > 0) {
                 swap(p1, p2, size);
+                swapped = 1;
             }
         }
     }

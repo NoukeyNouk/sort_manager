@@ -26,7 +26,7 @@ elements = 1000
 field = 2
 executable_path = "./lab6"
 
-args = [executable_path, "-im", "-s", str(sort_type), "-a", str(arrays), "-e", str(elements), "-f", str(field)]
+args = [executable_path, "-i", "-m", "-s", str(sort_type), "-a", str(arrays), "-e", str(elements), "-f", str(field)]
 
 # print(*args)
 
@@ -42,17 +42,17 @@ for sort_type in range(3):
         dct[sort_type].append(dot)
         # break
 
-with open('dots1.csv', 'w', newline='', encoding='utf-8-sig') as f:
+with open('tables/dots1.csv', 'w', newline='', encoding='utf-8-sig') as f:
     writer = csv.writer(f, delimiter=';')
     writer.writerows(dct[0])
 
 
-with open('dots2.csv', 'w', newline='', encoding='utf-8-sig') as f:
+with open('tables/dots2.csv', 'w', newline='', encoding='utf-8-sig') as f:
     writer = csv.writer(f, delimiter=';')
     writer.writerows(dct[1])
 
 
-with open('dots3.csv', 'w', newline='', encoding='utf-8-sig') as f:
+with open('tables/dots3.csv', 'w', newline='', encoding='utf-8-sig') as f:
     writer = csv.writer(f, delimiter=';')
     writer.writerows(dct[2])
 
